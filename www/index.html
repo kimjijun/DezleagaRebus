@@ -154,22 +154,18 @@
       <div class="upload-icon">📂</div>
       <h2>Alege un rebus</h2>
       <div class="button-group">
-        <button id="loadBundledBtn" class="btn btn-primary">📁 Din folderul meu</button>
-        <button id="loadFileBtn"    class="btn btn-blue">📎 Selectează XML</button>
+        <button id="loadFileBtn"    class="btn btn-blue">📎 Încarcă XML</button>
+        <button id="loadMultipleBtn" class="btn btn-orange">📁 Mai multe XML-uri</button>
       </div>
       <input type="file" id="xmlFileInput" accept=".xml,text/xml,application/xml" style="display:none">
+      <input type="file" id="xmlMultipleInput" accept=".xml,text/xml,application/xml" multiple style="display:none">
     </div>
     <div class="folder-info">
-      <strong>📂 Cum să adaugi rebusurile tale:</strong>
-      Copiază fișierele XML în folderul:<br>
-      <code style="background:#e2e8f0;padding:2px 6px;border-radius:4px;font-size:12px;">
-        /storage/emulated/0/DezleagaRebus/
-      </code><br><br>
-      Poți face asta via USB de pe PC sau cu o aplicație de file manager.
-      Apoi apasă "Din folderul meu".
+      <strong>📂 Cum încarci mai multe rebus-uri deodată:</strong>
+      Apasă "📁 Selectează mai multe XML" și alege oricâte fișiere XML vrei simultan din Downloads sau orice alt folder.
     </div>
     <div id="bundledPuzzlesSection" class="saved-section hidden">
-      <h2>📁 Rebus-uri găsite</h2>
+      <h2>📁 Rebus-uri încărcate</h2>
       <div id="bundledPuzzlesList"></div>
     </div>
     <div id="savedPuzzlesSection" class="saved-section hidden">
@@ -320,22 +316,21 @@ function showToast(msg) {
 // ═══════════════════════════════════════════
 //  BUTTONS
 // ═══════════════════════════════════════════
-document.getElementById('loadBundledBtn').addEventListener('click', async () => {
-  const section = document.getElementById('bundledPuzzlesSection');
-  if (!section.classList.contains('hidden')) {
-    section.classList.add('hidden');
-    document.getElementById('loadBundledBtn').textContent = '📁 Din folderul meu';
-    return;
-  }
-  document.getElementById('loadBundledBtn').textContent = '⏳ Se caută...';
-  bundledPuzzles = await readPuzzlesFromFolder();
+// Buton multiple files
+document.getElementById('loadMultipleBtn').addEventListener('click', () => {
+  document.getElementById('xmlMultipleInput').click();
+});
 
-  if (bundledPuzzles.length === 0) {
-    showToast('Nu s-au găsit XML-uri în /storage/emulated/0/DezleagaRebus/');
-    document.getElementById('loadBundledBtn').textContent = '📁 Din folderul meu';
-    return;
+document.getElementById('xmlMultipleInput').addEventListener('change', async (e) => {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  showToast(`Se încarcă ${files.length} fișiere...`);
+  bundledPuzzles = [];
+  bundledMeta = [];
+  for (const file of files) {
+    const content = await readFileAsText(file);
+    bundledPuzzles.push({ name: file.name, content });
   }
-
   bundledMeta = bundledPuzzles.map((p, i) => {
     const fileName = p.name.replace(/\.xml$/i, '');
     let creator = 'Necunoscut';
@@ -343,11 +338,19 @@ document.getElementById('loadBundledBtn').addEventListener('click', async () => 
     return { index: i, fileName, creator };
   });
   bundledMeta.sort((a, b) => a.fileName.localeCompare(b.fileName, 'ro', { numeric: true, sensitivity: 'base' }));
-
   renderBundledList();
-  section.classList.remove('hidden');
-  document.getElementById('loadBundledBtn').textContent = '🔽 Ascunde lista';
+  document.getElementById('bundledPuzzlesSection').classList.remove('hidden');
+  showToast(`${files.length} rebus-uri încărcate!`);
+  e.target.value = '';
 });
+
+function readFileAsText(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.readAsText(file);
+  });
+}
 
 function renderBundledList() {
   const container = document.getElementById('bundledPuzzlesList');
@@ -766,7 +769,6 @@ function showSuccessAnimation() {
 //  INIT
 // ═══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', async () => {
-  await initCapacitor();
   await loadSavedPuzzles();
 });
 </script>
