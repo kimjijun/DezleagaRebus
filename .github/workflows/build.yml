@@ -1,0 +1,50 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout cod
+        uses: actions/checkout@v4
+
+      - name: Seteaza Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Seteaza Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Seteaza Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Instaleaza dependinte npm
+        run: npm install
+
+      - name: Adauga platforma Android
+        run: npx cap add android
+
+      - name: Copiaza fisierele web in Android
+        run: npx cap copy android
+
+      - name: Construieste APK debug
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Incarca APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: DezleagaRebus-debug
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
