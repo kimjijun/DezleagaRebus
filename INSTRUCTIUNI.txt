@@ -1,0 +1,62 @@
+====================================================
+  DEZLEAGA REBUS - Instructiuni creare APK Android
+====================================================
+
+PASUL 1 - Creaza cont GitHub (daca nu ai deja)
+-----------------------------------------------
+1. Mergi la: https://github.com
+2. Click "Sign up"
+3. Completeaza email, parola, username
+4. Confirma emailul
+
+PASUL 2 - Creeaza un repository nou
+-------------------------------------
+1. Dupa login, click butonul verde "New" (stanga sus)
+2. Repository name: DezleagaRebus
+3. Lasa "Public" bifat
+4. NU bifa nimic altceva
+5. Click "Create repository"
+
+PASUL 3 - Incarca fisierele
+-----------------------------
+1. Pe pagina noului repository, cauta sectiunea
+   "uploading an existing file" si click pe ea
+   (sau "upload files" daca apare)
+2. Trage TOT CONTINUTUL din acest folder ZIP
+   (nu folderul in sine, ci fisierele din el)
+   in zona de upload
+3. Asigura-te ca structura e:
+     .github/workflows/build.yml
+     www/index.html
+     package.json
+     capacitor.config.json
+4. Scrie un mesaj in "Commit changes": "Prima versiune"
+5. Click "Commit changes"
+
+PASUL 4 - Asteapta compilarea
+-------------------------------
+1. Click pe tab-ul "Actions" din repository
+2. Vei vedea un build pornit automat (cerc galben = in progres)
+3. Asteapta 5-10 minute pana devine verde
+4. Daca e rosu = eroare, trimite-mi un screenshot
+
+PASUL 5 - Descarca APK-ul
+---------------------------
+1. Click pe build-ul verde din "Actions"
+2. Jos la sectiunea "Artifacts"
+3. Click pe "DezleagaRebus-debug"
+4. Se descarca un ZIP cu APK-ul inauntru
+
+PASUL 6 - Instaleaza pe telefon
+---------------------------------
+1. Trimite APK-ul pe telefon (email, WhatsApp, USB)
+2. Pe telefon, deschide APK-ul
+3. Daca apare "Surse necunoscute":
+   Setari -> Securitate -> Permite instalare din surse necunoscute
+4. Instaleaza
+
+====================================================
+  NOTA: APK-ul e "debug" - functioneaza perfect
+  pentru uz personal. Pentru Play Store ai nevoie
+  de versiune "release" cu semnatura.
+====================================================

@@ -1,0 +1,11 @@
+{
+  "appId": "ro.dezleagarebus.app",
+  "appName": "Dezleaga Rebus",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}
