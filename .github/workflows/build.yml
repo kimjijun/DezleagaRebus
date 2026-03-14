@@ -1,49 +1,32 @@
 name: Build Android APK
-
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout cod
-        uses: actions/checkout@v4
-
-      - name: Seteaza Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '18'
-
-      - name: Seteaza Java 17
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-
-      - name: Seteaza Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Instaleaza dependinte npm
-        run: npm install
-
-      - name: Adauga platforma Android
-        run: npx cap add android
-
-      - name: Sync Capacitor (genereaza toate fisierele necesare)
-        run: npx cap sync android
-
-      - name: Construieste APK debug
+      - uses: android-actions/setup-android@v3
+      - run: npm install
+      - run: npx cap add android
+      - run: npx cap sync android
+      - name: Adauga permisiuni
+        run: sed -i 's/<uses-permission android:name="android.permission.INTERNET" \/>/<uses-permission android:name="android.permission.INTERNET" \/>\n    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" \/>\n    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" \/>\n    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" \/>/' android/app/src/main/AndroidManifest.xml
+      - name: Build APK
         run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
-
-      - name: Incarca APK
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: DezleagaRebus-debug
           path: android/app/build/outputs/apk/debug/app-debug.apk
